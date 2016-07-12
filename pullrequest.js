@@ -16,7 +16,7 @@ function injectHtml() {
         '<label><input type="checkbox" class="js-collapse-deletions" checked="yes">-</label>' +
     '</span>').insertAfter('.actions, .file-actions');
 
-  $('<div class="pretty-pull-requests bottom-collapse">Click to Collapse</div>').insertAfter('.data.highlight.blob-wrapper');
+    $('<div class="pretty-pull-requests bottom-collapse">Click to Collapser</div>').insertAfter('.data.highlight.blob-wrapper');
 }
 
 function collapseAdditions() {
@@ -135,6 +135,7 @@ function moveToPreviousTab($pullRequestTabs, selectedTabIndex) {
 function initDiffs() {
     if (useLocalStorage) {
         $('a[name^=diff-]').each(function(index, item) {
+            console.log(item);
             var id = $(item).attr('name');
 
             if (localStorage.getItem(uniquify(id)) === 'collapse') {
@@ -172,6 +173,24 @@ chrome.storage.sync.get({url: '', saveCollapsedDiffs: true, tabSwitchingEnabled:
             setTimeout(injectHtmlIfNecessary, 1000);
         };
         var $body = $('body');
+        var lines = $('.diff-table tr')
+        var minus_lines = [];
+        var plus_lines = [];
+        lines.each(function(index, line) {
+            var line_text = $(line).text().trim()
+            if (line_text.startsWith("+")) {
+                plus_lines.push(line_text.substring(1));
+            }
+            if (line_text.startsWith("-")) {
+                minus_lines.push(line_text.substring(1));
+            }
+        });
+        $(minus_lines).each(function(index, line) {
+            console.log("Minus: " + line);
+        });
+        $(plus_lines).each(function(index, line) {
+            console.log("Plus: " + line);
+        });
         useLocalStorage = items.saveCollapsedDiffs;
 
         injectHtmlIfNecessary();

@@ -173,23 +173,29 @@ chrome.storage.sync.get({url: '', saveCollapsedDiffs: true, tabSwitchingEnabled:
             setTimeout(injectHtmlIfNecessary, 1000);
         };
         var $body = $('body');
-        var lines = $('.diff-table tr')
         var minus_lines = [];
         var plus_lines = [];
-        lines.each(function(index, line) {
-            var line_text = $(line).text().trim()
-            if (line_text.startsWith("+")) {
-                plus_lines.push(line_text.substring(1));
-            }
-            if (line_text.startsWith("-")) {
-                minus_lines.push(line_text.substring(1));
-            }
+        skip_lines = ["", "(", ")", "{", "}"];
+        $('.diff-table .blob-code-deletion').each(function(index, line) {
+            var line_text = $.trim($.trim($(line).text()).substring(1));
+            if ($.inArray(line_text, skip_lines) == -1) { minus_lines.push(line_text); }
         });
+        $('.diff-table .blob-code-addition').each(function(index, line) {
+            var line_text = $.trim($.trim($(line).text()).substring(1));
+            if ($.inArray(line_text, skip_lines) == -1) { plus_lines.push(line_text); }
+        });
+        /*
         $(minus_lines).each(function(index, line) {
             console.log("Minus: " + line);
         });
         $(plus_lines).each(function(index, line) {
             console.log("Plus: " + line);
+        });
+        */
+        $(minus_lines).each(function(index, line) {
+            if ($.inArray(line, plus_lines) !== -1) {
+                console.log("Contains " + line);
+            }
         });
         useLocalStorage = items.saveCollapsedDiffs;
 
